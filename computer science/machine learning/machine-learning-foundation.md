@@ -29,6 +29,20 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
 - Lecture 4: Feasibility of Learning
     - Hoeffding's Inequality
     - Connect to Learning
+- Lecture 5: Training versus Testing
+    - Two Central Questions
+    - Trade-off on M
+    - Where Did M Come From
+    - How Many Lines Are There?
+    - Effective Number of Lines
+    - Dichotomies: Mini-hypotheses
+    - Growth Function
+        - Growth Function for Positive Rays
+        - Growth Fucntion for Positive Intervals
+        - Growth Function for Convex Sets
+    - The Four Growth Functions
+        - Break Point of H
+- Lecture 6: Theory of Generalization
 
 <!-- /MarkdownTOC -->
 
@@ -56,6 +70,20 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     + Probability to the Rescue
     + Connection to Learning
     + Connection to Real Learning
++ Lecture 5: Training versus Testing
+    + Recap and Preview
+        + two questions: E~out~(g) ≈ E~in~(g), and E~in~(g) ≈ 0
+    + Effective Number of Lines
+        + at most 14 through the eye of 4 inputs
+    + Effective Number of Hypotheses
+        + at most m~H~(N) through the eye of N inputs
+    + Break Point
+        + when m~H~(N) becomes 'non-exponential'
++ Lecture 6: Theory of Generalization
+    + Restriction of Break Point
+    + Bounding Function: Basic Cases
+    + Bounding Function: Inductive Cases
+    + A Pictorial Proof
 
 ## Lecture 1 The Learning Problem
 
@@ -336,4 +364,112 @@ Most reasonable A(like PLA/pocket): pick the h~m with **lowest E~in~(h~m~) as g
 ![mlf22](./_resources/mlf22.jpg)
 
 不过仍然有一个遗留问题，刚刚的推论是在hypothesis set有限的前提下，那类似于PLA的hypothesis set是无穷的又如何呢？不用紧张，以后会证明这个问题。现在至少在有限的情形下证明了，这是一个很好的出发点。
+
+## Lecture 5: Training versus Testing
+
+![mlf23](./_resources/mlf23.jpg)
+
+### Two Central Questions
+
+![mlf24](./_resources/mlf24.jpg)
+
++ Can we make sure that E~out~(g) is close enough to E~in~(g)
++ Can we make E~in~(g) small enough?
+
+### Trade-off on M
+
+M 也就是 hypothesis 的集合，对于不同的值，对于上面两个问题有两个不同的解答
+
+Small M | Large M
+--- | ---
+Yes! P[BAD] <= 2·M·exp(...) | No! P[BAD] <= 2·M·exp(...)
+No! too few choices | Yes!, many choices
+
+这样就两难了，M 小的时候，可以保证 E~out~(g) 和 E~in~(g) 足够接近，但是不能保证 E~in~(g) 足够小；M 大的时候则是相反的情况。如何选择正确的 M 呢？尤其是 M 可能是无限多的情况怎么办呢？
+
+现在的情况就是这个公式和 M 有关
+
+![mlf25](./_resources/mlf25.jpg)
+
+所以想办法能不能把可能无限大的 M，弄成有限的数量 m~H
+
+![mlf26](./_resources/mlf26.jpg)
+
+### Where Did M Come From
+
+![mlf27](./_resources/mlf27.jpg)
+
+之前的讨论中，我们直接把概率的 or 转化为概率的相加，因为我们假设这些 BAD case 不大可能会重叠，但是当 M 很大的时候，这种做法(Uniform Bound)就不行了。为什么呢？
+
+因为假如 h~1 很接近于 h~2~,则 E~out~(h~1~) 会很接近 E~out~(h~2~)，并且很有可能 E~in~(h~1~) = E~in~(h~2~)
+
+Union bound **over-estimating** 很多重复的也被计算进去了。那么对于这种情况，如果我们能 group similar hypotheses by **kind**，就可以减少误差。
+
+### How Many Lines Are There?
+
+考虑平面上所有的线 H = {all lines in R^2^}
+
++ How many lines? 无限多条
++ How many **kinds of** lines if viewd from one input vector x~1?
+    + 两种，一种划分 x~1 是圈，另一种划分 x~1 是叉
+    + 2 kinds: h~1~-like(x~1~) = o or h~2~-like(x~1~) = x
+
+如果从两个点的角度来看呢？有 4 种线，x~1 和 x~2 的组合可能是：oo, xx, xo, ox
+
+三个点的情况下呢？通常情况下有 8 种线，x~1~, x~2~, x~3~ 的组合可能是：ooo, xxx, oox, xxo, oxo, xox, oxx, xoo
+
+但是如果三点共线的话，就只有 6 种线了。
+
+四个点的情况下呢？至多只有 14 种线了。(指的是线性可分的线的种类的数量)
+
+### Effective Number of Lines
+
+maximum kinds of lines with respect to N inputs x~1~, x~2~, ..., x~N~ -> **effective number of lines** 可能的有效划分的线种类数量
+
+![mlf28](./_resources/mlf28.jpg)
+
+这里用 `effective(N)` 代替了原来的 `M`，如果 `effective(N)` 远小于 2^N 的话，那么就可能解决无穷条线的问题了
+
+### Dichotomies: Mini-hypotheses
+
+![mlf29](./_resources/mlf29.jpg)
+
+用 Dichotomies Set 的大小来代替 M，但是现在会依赖于不同点的选取，需要做进一步的修改
+
+### Growth Function
+
+![mlf30](./_resources/mlf30.jpg)
+
+注意这里这个 m~H~(N) 是重要的符号
+
+#### Growth Function for Positive Rays
+
+![mlf31](./_resources/mlf31.jpg)
+
+N+1
+
+#### Growth Fucntion for Positive Intervals
+
+![mlf32](./_resources/mlf32.jpg)
+
+0.5N^2 + 0.5N + 1
+
+#### Growth Function for Convex Sets
+
+![mlf33](./_resources/mlf33.jpg)
+
+![mlf34](./_resources/mlf34.jpg)
+
+### The Four Growth Functions
+
+![mlf35](./_resources/mlf35.jpg)
+
+#### Break Point of H
+
+指的是增长函数中第一个有希望的点(也就是增长趋势放缓的点)，比方说之前三个点我们可以做出 8 种线，但是四个点的时候却不能做出 16 种线，所以 4 就是一个 break point。
+
+![mlf36](./_resources/mlf36.jpg)
+
+## Lecture 6: Theory of Generalization
+
 
