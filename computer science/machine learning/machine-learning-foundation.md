@@ -22,6 +22,13 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - Learning with **Noisy Data**
     - Pocket Algorithm
 - Lecture 3: Types of Learning
+    - Different Output Space
+    - Different Label
+    - Different Protocol
+    - Different Input Space
+- Lecture 4: Feasibility of Learning
+    - Hoeffding's Inequality
+    - Connect to Learning
 
 <!-- /MarkdownTOC -->
 
@@ -37,9 +44,18 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     * Non-Separable Data
 + Lecture 3: Types of Learning
     + Learning with Different Output Space y
+        + [classification],[regression], structured
     + Learning with Different Data Lable y~n
+        + [supervised], un/semi-supervised, reinforcement
     + Learning with Different Protocol f -> (x~n~,y~n~)
+        + [batch], online, active
     + Learning with Different Input Space X
+        + [concrete], raw, abstract
++ Lecture 4: Feasibility of Learning
+    + Learning is Impossible?
+    + Probability to the Rescue
+    + Connection to Learning
+    + Connection to Real Learning
 
 ## Lecture 1 The Learning Problem
 
@@ -179,4 +195,145 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
 
 ## Lecture 3: Types of Learning
 
+### Different Output Space
+
++ 二元分类与多元分类
++ 例子：Patient Recovery Prediction Problem
+    + binary classification: patient features -> sick or not
+    + multiclass classification: patient features -> which type of cancer
+    + regression(回归分析)
+        + patient features -> how many days before recovery
+        + compnay data -> stock price
+        + climate data -> temperature
++ 统计上有很多工具也可以放到机器学习里来用
++ Structured Learning
+    + Sequence Tagging Problem 词性标注
+    + protein data -> protein folding
+    + speech data -> speech parse tree
+
+### Different Label
+
++ 监督式学习
+    + ![mlf10](./_resources/mlf10.jpg)
++ 非监督式学习
+    + ![mlf11](./_resources/mlf11.jpg)
++ 其他一些非监督式学习
+    + ![mlf12](./_resources/mlf12.jpg)
+    + diverse, with possibly very different performance goals
++ 半监督式学习
+    + 只提供有限信息，只标记一部分，蓝色的是没有标记的，其他颜色是标记出来的
+    + ![mlf13](./_resources/mlf13.jpg)
+    + leverage unlabeled data to avoid 'expensive' labeling
+
+### Different Protocol
+
++ Reinforcement Learning
+    + 惩罚错误判断，鼓励正确判断
+    + learn with **partial/implicit information**(often sequentially)
++ Batch Learning 填鸭式教育
+    + ![mlf14](./_resources/mlf14.jpg)
+    + batch learning: **a very common protocol**
++ Online 老师教书
+    + hypothesis 'improves' through receiving data instances sequentially
+    + PLA can be easily adapted ton online protocol
+    + reinforcement learning is often done online
++ Active Learning
+    + ![mlf15](./_resources/mlf15.jpg)
+
+### Different Input Space
+
++ Concrete features: the 'easy' ones for ML
++ Raw features -> meaning of digit(比方说笔迹识别，把图像转换成数字化的信息，可以是对称性或者密度，或者直接转化成二维数组，越抽象，对于机器来说就越困难)
+    + often need human or machines to **convert to concrete ones**
+    + 要么是人工来做，要么就是 deep learning 自动来做
++ Abstract features: **no** physical meaning, even harder for ML
+    + 比方说评分预测问题(KDDCup 2011)
+    + need **feature conversion**/extraction/construction
+
+## Lecture 4: Feasibility of Learning
+
++ Inferring Something Unknown
+    + diificult to infer **unknown target f outside D** in learning
+    + 抽样调查
++ **Hoeffding's Inequality**
+    + 只是给出一个比较高的上限
+    + probably approximately correct(PAC)
+
+### Hoeffding's Inequality
+
+用一个从罐子里取玻璃球作为例子，有两种玻璃球：橙色和绿色。假设：
+
+    橙色的概率为 u
+    则绿色的概率为 1-u
+    但 u 具体是多少我们不知道
+
+然后我们从中取出 `N` 个样本：
+
+    橙色的比例为 v
+    则绿色的比例为 1-v
+    这时我们是知道 v 具体是多少的
+
+> Does **in-sample v** say anything about out-of-sample u?
+
++ Possibly not: sample can be mostly green while bin is mostly orange
++ Probably yes: in-sample v likely **close to** unknown u
+
+> Formally, what does v say about u?
+
+    u = orange probability in bin
+    v = orange fraction in sample
+
+![mlf16](./_resources/mlf16.jpg)
+
+抽样数量足够大的时候，抽样得到的概率 v 和实际概率 u 相差的概率会很小(Heoffding's Inequality)
+
+The statement `v = u` is **probably approximately correct**(PAC)
+
+根据上面的公式我们知道，其实要知道抽样得到的概率 v 和实际概率 u 相差多少，只跟误差和抽样的数量有关。
+
+If **large N**, can **probably** infer unknown u by known v
+
+### Connect to Learning
+
+瓶中的情况 | 对应到 Learning
+--- | ---
+unknown orange prob. u | fixed hypothesis h(x) ? target f(x)
+marble in bin | x 在 X 中
+orange | h is wrong -> h(x) 不等于 f(x) aka orange
+green | h is right -> h(x) 等于 f(x) aka green
+size-N sample from bin | check h on D = {(x~n~, y~n~)} 这里 y~n~ 就是 f(x~n~)
+
+![mlf17](./_resources/mlf17.jpg)
+
+![mlf18](./_resources/mlf18.jpg)
+
+E~out~(h) 对应于 总体概率 u，E~in~(h) 对应于抽样概率 v
+
+![mlf19](./_resources/mlf19.jpg)
+
+Does not depend on E~out~(h),**no need to know E~out~(h)**
+
+E~in~(h) = E~out~(h) is **probably approximately correct**(PAC)
+
+![mlf20](./_resources/mlf20.jpg)
+
+**BAD** sample: **E~in~ and E~out~ far away**
+
+can get **worse** when involving 'choice'
+
+Hoeffding 保证的是出现 Bad Sample 的机会不会很大
+
+![mlf21](./_resources/mlf21.jpg)
+
+什么意思呢？如果hypothesis set是有有限种选择，训练样本够多，那么不管学习算法A怎么选择，样本的判别结果都会与总体的一致。那么，如果学习算法设计为寻找样本中错误率最小的，那么刚刚的推论PAC就能保证选出来的g与f是约等于的。
+
+也就是说，当有 M 个 hypothesis 的时候，对应的误差也会变大，但是依然可以找到一个情况，此时
+
+E~in~(g) = E~out~(g) is **PAC, regardless of A**
+
+Most reasonable A(like PLA/pocket): pick the h~m with **lowest E~in~(h~m~) as g
+
+![mlf22](./_resources/mlf22.jpg)
+
+不过仍然有一个遗留问题，刚刚的推论是在hypothesis set有限的前提下，那类似于PLA的hypothesis set是无穷的又如何呢？不用紧张，以后会证明这个问题。现在至少在有限的情形下证明了，这是一个很好的出发点。
 
