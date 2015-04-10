@@ -43,6 +43,14 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - The Four Growth Functions
         - Break Point of H
 - Lecture 6: Theory of Generalization
+    - Restriction of Break Point
+    - Bounding Function
+    - BAD Bound for General H
+        - Step 1: Replace E~out~ by E~in~'
+        - Step 2: Decompose H by Kind
+        - Step 3: Use Hoeffding without Replacement
+    - Vapnik-Chervonenkis (VC) bound:
+- Lecture 7: The VC Dimension
 
 <!-- /MarkdownTOC -->
 
@@ -81,9 +89,19 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         + when m~H~(N) becomes 'non-exponential'
 + Lecture 6: Theory of Generalization
     + Restriction of Break Point
+        + break point 'breaks' consequent points
     + Bounding Function: Basic Cases
+        + B(N, k) bounds m~H~(N) with break point k
     + Bounding Function: Inductive Cases
+        + B(N, k) is poly(N)
     + A Pictorial Proof
+        + m~H~(N) can replace M with a few changes
++ Lecture 7: The VC Dimension
+    + Definition of VC Dimension
+    + VC Dimension of
+    + Physical Intuition of VC Dimension
+    + Interpreting VC Dimension
+
 
 ## Lecture 1 The Learning Problem
 
@@ -471,5 +489,80 @@ N+1
 ![mlf36](./_resources/mlf36.jpg)
 
 ## Lecture 6: Theory of Generalization
+
+E~out~ ≈ E~in~ possible if **m~H~(N) breaks somewhere** and **N large enough**
+
+growth function m~H~(N): max number of dichotomies
+
+![mlf37](./_resources/mlf37.jpg)
+
+### Restriction of Break Point
+
+what 'must be true' when **minimum break point** k = 2
+
++ N = 1: every m~H~(N) = 2 by definition
++ N = 2: every m~H~(N) < 4 by definition (so **maximum possible = 3)
++ N = 3: **maximum possible = 4 远小于 2^3^**
+
+break point k **restricts maximum possible m~H~(N) a lot** for N > k
+
+idea: m~H~(N) <= **maximum possible m~H~(N) given k** <= poly(N) N 的多项式时间
+
+### Bounding Function
+
+**bounding function B(N, k)**: maximum possible m~H~(N) when break point = k
+
++ combinatorial quantity: maximum number of length-N vectors with (o, x) while **no shatter any length-k** subvectors
++ irrelevant of the details of H.
+
+new goal: B(N, k) <= poly(N)?
+
+B(N, k) <= B(N-1, k) + B(N-1, k-1)
+
+now we have **upper bound** of bounding function
+
+![mlf38](./_resources/mlf38.jpg)
+
++ simple induction using **boundary and inductive formula**
++ for fixed k, B(N, k) upper bounded by poly(N) -> **m~H~(N) is poly(N) if break point exists
++ `<=` can be `=` actually
+
+### BAD Bound for General H
+
+![mlf39](./_resources/mlf39.jpg)
+
+具体的证明主要分以下几步
+
+#### Step 1: Replace E~out~ by E~in~'
+
+![mlf40](./_resources/mlf40.jpg)
+
++ E~in~(h) finitely many, E~out~(h) infinitely many 所以第一步先想办法把 E~out~ 给替换掉
++ How? sample **verification set D'** of size N to calculate E~in~'
++ BAD h of E~in~ - E~out~ 可以大概近似于 BAD h of E~in~ - E~in~'
+
+这样一来 evil E~out~ removed by verification with **ghost data**
+
+#### Step 2: Decompose H by Kind
+
+![mlf41](./_resources/mlf41.jpg)
+
+![mlf42](./_resources/mlf42.jpg)
+
+use m~H~(2N) to calculate BAD-overlap properly
+
+#### Step 3: Use Hoeffding without Replacement
+
+![mlf43](./_resources/mlf43.jpg)
+
+![mlf44](./_resources/mlf44.jpg)
+
+use **Hoeffding** after aooming to fixed h
+
+### Vapnik-Chervonenkis (VC) bound:
+
+![mlf45](./_resources/mlf45.jpg)
+
+## Lecture 7: The VC Dimension
 
 
