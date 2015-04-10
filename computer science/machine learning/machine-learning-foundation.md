@@ -51,6 +51,13 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         - Step 3: Use Hoeffding without Replacement
     - Vapnik-Chervonenkis (VC) bound:
 - Lecture 7: The VC Dimension
+    - More on Vapnik-Chervonenkis(VC) Bound
+    - VC Dimension
+    - VC Dimension and Learning
+    - 2D PLA Revisited
+    - VC Dimension of Perceptrons
+    - 证明 d~vc~ >= d+1
+    - 证明 d~vc~ <= d+1
 
 <!-- /MarkdownTOC -->
 
@@ -504,9 +511,13 @@ what 'must be true' when **minimum break point** k = 2
 + N = 2: every m~H~(N) < 4 by definition (so **maximum possible = 3)
 + N = 3: **maximum possible = 4 远小于 2^3^**
 
+既然如此，换一个角度来考虑的话那么更General的情况是：如果现在已知minimum break point k = 2，在样本量N不同的情况下对应的Dichotomies大小又是如何的状况呢？k = 2这里的意义就是说任意的两个样本点都无法被shatter到（shatter到的意思：n个样本点的2^n个情形都能出现，这里就是指2个样本点的4种情形都能出现）。
+
 break point k **restricts maximum possible m~H~(N) a lot** for N > k
 
 idea: m~H~(N) <= **maximum possible m~H~(N) given k** <= poly(N) N 的多项式时间
+
+m~H~(N)跟我们实际上的 hypothesis set 有关，我们不如来算一下 m~H~(N)在有某一个break point的前提下，到底能产生多少种可能性。如果最多的可能性，也即 m~H~(N)的最大值也是一个多项式的话，那么就可以放心大胆的说 m~H~(N)也是多项式的。进而，如果能将这个多项式的 m~H~(N) 成功地放进我们原来的 Hoeffding 不等式的话，也许我们就可以说在PLA这样的无穷 hypothesis set 上的 Learning 是做得到的。
 
 ### Bounding Function
 
@@ -537,13 +548,17 @@ now we have **upper bound** of bounding function
 
 ![mlf40](./_resources/mlf40.jpg)
 
-+ E~in~(h) finitely many, E~out~(h) infinitely many 所以第一步先想办法把 E~out~ 给替换掉
+第一步，想办法将式子中的 E~out~(h) 替换掉。hypothesis set只要有一个 h 发生坏事情，也就是 E~in~(h) 与 E~out~(h) 差别很大，我们就说这个训练数据 D 不是好的数据，我们希望坏数据 D 发生的概率不要太高。
+
++ E~in~(h) finitely many, E~out~(h) infinitely many
 + How? sample **verification set D'** of size N to calculate E~in~'
 + BAD h of E~in~ - E~out~ 可以大概近似于 BAD h of E~in~ - E~in~'
 
 这样一来 evil E~out~ removed by verification with **ghost data**
 
 #### Step 2: Decompose H by Kind
+
+想办法将 Hyspothesis set 换成某一个 h。如下图所示，现在在乎的所有和 BAD 有关的只是 E~in~(h) 和 E~in~(h)' 来决定了。也就是说，如果 h 在 D 与 D’ 上做出一样的 dichotomy 的话，那么 E~in~(h) 和 E~in~(h)' 就会长一样。所以我只要把所有的 hypothesis set 分成 |H(x1, x2…, x’1, x’2…)| 这么多类就好，也就是在这 2N 个点上有多少种 Dichotomies 就好了。这样的话最多最多有 m~H~(2N) 种，把每一种抓一个代表出来我们就可以使用 union bound 了。
 
 ![mlf41](./_resources/mlf41.jpg)
 
@@ -557,12 +572,105 @@ use m~H~(2N) to calculate BAD-overlap properly
 
 ![mlf44](./_resources/mlf44.jpg)
 
-use **Hoeffding** after aooming to fixed h
+use **Hoeffding** after zooming to fixed h
+
+现在我们已经是固定的 h，想知道两次 sampling 的差别。就好像我们先有 2N 个样本的例子，我们抓 N 个出来然后比较剩下的 N 个；或者说我们抓 N 个出来，比较它跟所有 2N 个的平均是多少。如果想要 E~in~(h) 和 E~in~(h)' 相差 alpha 的话，那么 E~in~(h) 与所有人的平均需要相差 alpha/2。那怎么知道 E~in~(h) 与所有 2N 的差别呢？没错，就是使用 Hoeffding 不等式来解决，只不错这次罐子变得更小，变得有限的 2N 个了。
 
 ### Vapnik-Chervonenkis (VC) bound:
 
 ![mlf45](./_resources/mlf45.jpg)
 
 ## Lecture 7: The VC Dimension
+
+如果成长函数在 k 处有 break point，那么这个成长函数会被一个上限函数所限制，这个上限函数又会被某个多项式限制，这个多项式是 k-1 次方
+
+![mlf46](./_resources/mlf46.jpg)
+
+![mlf47](./_resources/mlf47.jpg)
+
+### More on Vapnik-Chervonenkis(VC) Bound
+
+![mlf48](./_resources/mlf48.jpg)
+
+![mlf49](./_resources/mlf49.jpg)
+
+### VC Dimension
+
+the formal name of **maximum non-**break point
+
+![mlf50](./_resources/mlf50.jpg)
+
++ N <= d~vc~ -> H can shatter some N inputs
++ k > d~vc~ -> k is a break point for H
+
+if N >= 2, d~vc~ >= 2, m~H~(N) <= N 的 d~vc~ 次方
+
+![mlf51](./_resources/mlf51.jpg)
+
+good: **finite d~vc~**
+
+### VC Dimension and Learning
+
+**finite d~vc~ -> g will generalize E~out~(g) ≈ E~in~(g)**
+
++ regardless of learning algorithm A
++ regardless of input distribution P
++ regardless of target function f
+
+![mlf52](./_resources/mlf52.jpg)
+
+### 2D PLA Revisited
+
+如果现在 2D 里面我们的数据是 **linearly separable D**，那么 **PLA can converge**，也就是说，当迭代次数 T 足够大的时候，我们可以找到一条线，这条线把所有 data 正确分类，也就是 **E~in~(g)=0**。
+
+如果这些 data 是从某个分布中(具体是什么分布不重要)以及某个target function得来的，即 **with x~n~ ~ P and y~n~ = f(x~n~)**，我们有很大的机会说他们的 E~in~(g) 和 E~out~(g) 是很接近的，因为我们知道了 d~vc~ 是有限的。当 N 很大的时候，可以知道 **E~out~(g) ≈ E~in~(g)**
+
+![mlf53](./_resources/mlf53.jpg)
+
+那么问题来了: general PLA for x with **more than 2 features** 怎么办呢
+
+### VC Dimension of Perceptrons
+
++ 1D perceptro (pos/neg rays): d~vc~ = 2
++ 2D perceptrons: d~vc~ = 3
+    + 如何证明的呢？
+    + 三个点的情况下，我们找到一种方式可以shatter，于是 d~vc~ >= 3
+    + 四个点的情况下，我们发现所有方式都不可以shatter，于是 d~vc~ <= 3
+    + 于是 d~vc~ = 3
++ d-D perceptrons: d~vc~ ? d+1 如何证明呢
+
+### 证明 d~vc~ >= d+1
+
+**一个习题**
+
+![mlf54](./_resources/mlf54.jpg)
+
+There are **some d+1 inputs** we can shatter
+
+![mlf55](./_resources/mlf55.jpg)
+
+注意：X **invertible**
+
+怎么样可以保证 shatter 呢，对于任何一组输入 y，存在这样的 w 保证 Xw 的符号等于 y
+
+![mlf56](./_resources/mlf56.jpg)
+
+'special' X can be shattered -> d~vc~ >= d+1
+
+### 证明 d~vc~ <= d+1
+
+**一个习题**
+
+![mlf57](./_resources/mlf57.jpg)
+
+要证明所有可能性都不行。
+
+linear dependence **restricts dichotomy**
+
+![mlf58](./_resources/mlf58.jpg)
+
+'general' X no-shatter -> d~vc~ <= d+1
+
+
 
 
