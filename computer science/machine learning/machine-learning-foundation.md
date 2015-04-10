@@ -58,6 +58,11 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - VC Dimension of Perceptrons
     - 证明 d~vc~ >= d+1
     - 证明 d~vc~ <= d+1
+    - Degrees of Freedom
+    - VC Bound Rephrase: Penalty for Model Complexity
+    - THE VC Message
+    - VC Bound Rephrase: Sample Complexity
+    - Looseness of VC Bound
 
 <!-- /MarkdownTOC -->
 
@@ -90,7 +95,7 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         + two questions: E~out~(g) ≈ E~in~(g), and E~in~(g) ≈ 0
     + Effective Number of Lines
         + at most 14 through the eye of 4 inputs
-    + Effective Number of Hypotheses
+    + Effective Number of Hypothesis
         + at most m~H~(N) through the eye of N inputs
     + Break Point
         + when m~H~(N) becomes 'non-exponential'
@@ -105,9 +110,13 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         + m~H~(N) can replace M with a few changes
 + Lecture 7: The VC Dimension
     + Definition of VC Dimension
+        + maximum non-break point
     + VC Dimension of
+        + d~vc~(H) = d + 1
     + Physical Intuition of VC Dimension
+        + d~vc~ ≈ #free parameters
     + Interpreting VC Dimension
+        + loosely: model complexity & sample complexity
 
 
 ## Lecture 1 The Learning Problem
@@ -671,6 +680,54 @@ linear dependence **restricts dichotomy**
 
 'general' X no-shatter -> d~vc~ <= d+1
 
+### Degrees of Freedom
 
++ hypothesis parameters w = (w~0~, w~1~,..., w~d~): creates degrees of freedom
++ hypothesis quantity M = |H|: 'analog' degrees of freedom
++ hypothesis 'power' d~vc~ = d+1: **effective 'binary' degrees of freedom**
 
+物理意义是 hypothesis set 在做二元分类的时候有多少自由度(就是有多少可控的参数)
 
+我们发现，d+1 实际上就是perceptron 的维度，所以 VC dimension 就和 perceptron 的维度联系起来了。hypothesis set 是由 d+1 维的 w 来表示的，而这些 w 可以代表着 hypothesis 的自由度 degrees of freedom。所以 VC dimension 的物理意义就是 effective ‘binary’ degrees of freedom，hypothesis set 在作二元分类的状况下到底有多少的自由度。同时也就象征着 powerfulness of H，到底能够产生多少的dichotomies。
+
+d~vc~(H): powerfullness of H
+
+![mlf59](./_resources/mlf59.jpg)
+
+practical rule of thumb: **d~vc~ ≈ #free parameters(but not always)**
+
+**using the right d~vc~ (or H) is important**
+
+### VC Bound Rephrase: Penalty for Model Complexity
+
+VC dimension的一种意义是表征着 model complexity。
+
+![mlf60](./_resources/mlf60.jpg)
+
+坏事情发生的机会很小，也就是好事情发生的机会很大
+
+![mlf61](./_resources/mlf61.jpg)
+
+信赖区间，一般比较在意右边的部分，考虑最坏情况。
+
+根号里面的部分是 penalty for **model complexity** Ω(N, H, δ)
+
+### THE VC Message
+
+![mlf62](./_resources/mlf62.jpg)
+
+**powerful H** not always good
+
+### VC Bound Rephrase: Sample Complexity
+
+VC bound还有另外的一种含义：Sample Complexity样本复杂度。
+
+![mlf63](./_resources/mlf63.jpg)
+
+prictical rule of thumb: **N ≈ 10d~vc~ often enough!**
+
+### Looseness of VC Bound
+
+![mlf64](./_resources/mlf64.jpg)
+
+**philosophical message** of VC bound important for improving ML
