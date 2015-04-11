@@ -81,6 +81,12 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - Geometric View of **Hat Matrix**
     - The Learning Curve
     - Linear Classification vs. Linear Regression
+- Lecture 10: Logistic Regression
+    - Logistic Function
+    - Three Linear Models
+    - Likelihood
+    - Cross-Entropy Error
+    - Minimizing E~in~(w)
 
 <!-- /MarkdownTOC -->
 
@@ -153,6 +159,11 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         + E~out~ - E~in~ ≈ 2(d+1)/N on average
     + Linear Regression for Binary Classification
         + 0/1 error <= squared error
++ Lecture 10: Logistic Regression
+    + Logistic Regression Problem
+    + Logistic Regression Error
+    + Gradient of Logistic Regression Error
+    + Gradient Descent
 
 
 ## Lecture 1 The Learning Problem
@@ -864,6 +875,8 @@ systematic route(called 'reduction') can be applied to many other algorithm
 
 ## Lecture 9: Linear Regression
 
+![mlf102](./_resources/mlf102.jpg)
+
 例如，信用卡额度预测问题：特征是用户的信息（年龄，性别，年薪，当前债务，…），我们要预测可以给该客户多大的信用额度。 这样的问题就是回归问题。目标值 y 是实数空间 R。线性回归的假设 hypothesis 是 h(x) = w^T^x
 
 For x = (x~0~, x~1~, x~2~,..., x~d~) 'features of customer', approximate the **desired credit limit** with a **weighted** sum:
@@ -997,5 +1010,114 @@ W~LIN~: useful baseline classifier, or as initial PLA/pocket vector 用作一开
 **一个习题**
 
 ![mlf101](./_resources/mlf101.jpg)
+
+## Lecture 10: Logistic Regression
+
+有一组病人的数据，我们需要预测他们在一段时间后患上心脏病的“可能性”，就是我们要考虑的问题。通过二值分类，我们仅仅能够预测病人是否会患上心脏病，不同于此的是，现在我们还关心患病的可能性，即 f(x) = P(+1|x)，取值范围是区间 [0,1]。
+
+然而，我们能够获取的训练数据却与二值分类完全一样，x 是病人的基本属性，y 是 +1(患心脏病)或 -1（没有患心脏病）。输入数据并没有告诉我们有关“概率” 的信息。在二值分类中，我们通过 w*x 得到一个 ”score” 后，通过取符号运算 sign 来预测 y 是 +1 或 -1。而对于当前问题，我们如过能够将这个 score 映射到[0,1] 区间，问题似乎就迎刃而解了。
+
+same data as hard binary classification, different **target function**
+
+我们手上的数据可以看成是我们想要资料的有噪声的版本，在噪声的基础上我们来找到最接近真实的情况
+
+![mlf103](./_resources/mlf103.jpg)
+
+同样是根据权重算出一个分数，但是会通过另一个函数θ 来把这个分数映射到0到1的区间
+
+### Logistic Function
+
+![mlf104](./_resources/mlf104.jpg)
+
+平滑可微 S 形函数
+
+![mlf105](./_resources/mlf105.jpg)
+
+**一个习题**
+
+![mlf106](./_resources/mlf106.jpg)
+
+### Three Linear Models
+
+linear scoring functions: s = w^T^x
+
+![mlf107](./_resources/mlf107.jpg)
+
+how to define **E~in~(w) for logistic regression**?
+
+### Likelihood
+
+在机器学习假设中，数据集 D 是由 f 产生的，我们可以按照这个思路，考虑 f 和假设 h 生成训练数据 D 的概率是多少？首先要产生 x~1~，概率是 P(x~1~)，然后产生 y~1~，概率是 P(y~1~ | x~1~)。
+
+![mlf108](./_resources/mlf108.jpg)
+
+这里可以对 P(o|x~1~) P(x|x~2~) ...进行代换，变成下面的形式
+
+![mlf109](./_resources/mlf109.jpg)
+
+如何想要 h 与 f 很接近的话，那么 h 产生数据 D 的可能性与 f 真正产生这些数据的可能性就会很接近，训练数据的客观存在的，显然越有可能生成该数据集的假设越好。也就是 h 产生数据 D 的可能性是最高的。
+
+![mlf110](./_resources/mlf110.jpg)
+
+logistic hypothesis有一个数学上的特性：1 - h(x) = h(-x)。所以 likelihood(h) 就可以化简为如下图所示，其中灰色的 P(x) 是一系列的常数。所以，likelihood(logistic h) 正比于如下的连乘。
+
+![mlf111](./_resources/mlf111.jpg)
+
+利用上面的特性替换之后：
+
+![mlf112](./_resources/mlf112.jpg)
+
+### Cross-Entropy Error
+
+把上面的公式用 w 和 θ 代入之后，可以得到下面的公式
+
+![mlf113](./_resources/mlf113.jpg)
+
+前面有 h(x) = θ(w^T^x)
+
+但是这里是连乘，不是特别好处理，我们这里取对数，就可以把连乘变成连加
+
+![mlf114](./_resources/mlf114.jpg)
+
+之前我们都做的是最小化，所以增加一个负号，变成最小化，然后在除以一个 N，做一个常数的 scaling
+
+![mlf115](./_resources/mlf115.jpg)
+
+把 θ 具体代入到上面的公式，就可以得到
+
+![mlf116](./_resources/mlf116.jpg)
+
+err(w, x, y) = ln(1 + exp(-ywx)) **cross-entropy error**
+
+是一个 point-wise 的 error function
+
+**一个习题**
+
+![mlf117](./_resources/mlf117.jpg)
+
+### Minimizing E~in~(w)
+
+![mlf118](./_resources/mlf118.jpg)
+
+我们已经推导完了E~in~(w)，接下来的事情就是想办法找到 w 使得E~in~(w)是最小的。幸运的是，LR 的这个函数是 convex 的。求解最小值就是找到谷底梯度为0的地方。
+
+![mlf119](./_resources/mlf119.jpg)
+
+第一步就是求梯度 ▽E~in~(w)
+
+![mlf120](./_resources/mlf120.jpg)
+
+一步一步求解偏微分，微积分连锁率。这个是其中一个 component 的推导，然后对于整体来说，可以写成如下形式：用 x~n~ 代替 x~n,i~
+
+![mlf121](./_resources/mlf121.jpg)
+
+到这一步我们想要的就是让这个梯度为零
+
+![mlf122](./_resources/mlf122.jpg)
+
+可以把梯度看成是一个以 θ 为权重的 y~n~x~n~ 的加权平均
+
+![mlf123](./_resources/mlf123.jpg)
+
 
 
