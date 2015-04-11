@@ -16,3 +16,4 @@
 4.8 | 65.5 | insanity 10
 4.9 | 65.5 | insanity 11
 4.10 | 65.2 | insanity 09
+4.11 | 65.6 | insanity 13

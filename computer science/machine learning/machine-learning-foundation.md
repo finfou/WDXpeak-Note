@@ -35,7 +35,7 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - Where Did M Come From
     - How Many Lines Are There?
     - Effective Number of Lines
-    - Dichotomies: Mini-hypotheses
+    - Dichotomies: Mini-hypothesis
     - Growth Function
         - Growth Function for Positive Rays
         - Growth Fucntion for Positive Intervals
@@ -63,6 +63,24 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
     - THE VC Message
     - VC Bound Rephrase: Sample Complexity
     - Looseness of VC Bound
+- Lecture 8: Noise and Error
+    - Target Distribution P(y|x)
+    - Error Measure
+    - Two Important Pointwise Error Measures
+    - Choice of Error Measure
+    - Weighted Classification
+    - Minimizing E~in~ for Weighted Classification
+- Lecture 9: Linear Regression
+    - The Error Measure
+    - Matrix Form of E~in~(w)
+    - The Gradient ▽E~in~(w)
+    - Optimal Linear Regression Weights
+    - Linear Regression Algorithm
+    - Is Linear Regression a 'Learning Algorithm'?
+    - Benefit of Analytic Solution: 'Simpler-than-VC' Guarantee
+    - Geometric View of **Hat Matrix**
+    - The Learning Curve
+    - Linear Classification vs. Linear Regression
 
 <!-- /MarkdownTOC -->
 
@@ -117,6 +135,24 @@ Hsuan-Tien Lin htlin@csie.ntu.edu.tw
         + d~vc~ ≈ #free parameters
     + Interpreting VC Dimension
         + loosely: model complexity & sample complexity
++ Lecture 8: Noise and Error
+    + Noise and Probability Target
+        + can replace f(x) by P(y|x)
+    + Error Measure
+        + affect 'ideal' target
+    + Algorithmic Error Measure
+        + user-dependent -> plausible or friendly
+    + Weighted Classification
+        + easily done by virtual 'example copying'
++ Lecture 9: Linear Regression
+    + Linear Regression Problem
+        + use hyperplanes to approximate real values
+    + Linear Regression Algorithm
+        + analytic solution with pseudo-inverse
+    + Generalization Issue
+        + E~out~ - E~in~ ≈ 2(d+1)/N on average
+    + Linear Regression for Binary Classification
+        + 0/1 error <= squared error
 
 
 ## Lecture 1 The Learning Problem
@@ -437,7 +473,7 @@ No! too few choices | Yes!, many choices
 
 因为假如 h~1 很接近于 h~2~,则 E~out~(h~1~) 会很接近 E~out~(h~2~)，并且很有可能 E~in~(h~1~) = E~in~(h~2~)
 
-Union bound **over-estimating** 很多重复的也被计算进去了。那么对于这种情况，如果我们能 group similar hypotheses by **kind**，就可以减少误差。
+Union bound **over-estimating** 很多重复的也被计算进去了。那么对于这种情况，如果我们能 group similar hypothesis by **kind**，就可以减少误差。
 
 ### How Many Lines Are There?
 
@@ -464,7 +500,7 @@ maximum kinds of lines with respect to N inputs x~1~, x~2~, ..., x~N~ -> **effec
 
 这里用 `effective(N)` 代替了原来的 `M`，如果 `effective(N)` 远小于 2^N 的话，那么就可能解决无穷条线的问题了
 
-### Dichotomies: Mini-hypotheses
+### Dichotomies: Mini-hypothesis
 
 ![mlf29](./_resources/mlf29.jpg)
 
@@ -590,6 +626,8 @@ use **Hoeffding** after zooming to fixed h
 ![mlf45](./_resources/mlf45.jpg)
 
 ## Lecture 7: The VC Dimension
+
+if **finite d~vc~**, **large N**, and **low E~in~**
 
 如果成长函数在 k 处有 break point，那么这个成长函数会被一个上限函数所限制，这个上限函数又会被某个多项式限制，这个多项式是 k-1 次方
 
@@ -731,3 +769,233 @@ prictical rule of thumb: **N ≈ 10d~vc~ often enough!**
 ![mlf64](./_resources/mlf64.jpg)
 
 **philosophical message** of VC bound important for improving ML
+
+## Lecture 8: Noise and Error
+
+learning can happen with **target distribution P(y|x)** and **low E~in~ w.r.t. err**
+
+噪声是容易出现的，人工标记错误；同一个数据不同人工标记不同；训练数据收集可能不精准等等原因。那么在有噪声的时候，我们之前推导的 VC bound 是否仍然能作用的很好？
+
+回想一下，VC bound 的核心：我们不知道一个罐子里有多少橘色的弹珠，不过我们抓一把出来就可以估计橘色的弹珠有多少，这些橘色的弹珠就是我们犯错误的地方。噪声的影响就是特别的弹珠，弹珠的颜色不是固定的，譬如弹珠40%是橘色的，60%的时候是绿色的。那这时候我们如何知道罐子大致的橘色的比例是多少呢。
+
+![mlf65](./_resources/mlf65.jpg)
+
+### Target Distribution P(y|x)
+
+也就是说，只要我们的每个训练数据 y 来自某一个 joint distribution P(y|x)，我们在训练的时候和测试的时候都符合 P(y|x)，那么这个 VC bound 的大架构还是有效的。P(y|x) 通常叫做 **target distribution**，对于每一个 x 可以做一个它最理想的预测 **mini-target** 是什么。它告诉我们最理想的预测 **ideal mini-target** 是什么，另外不理想的就是 noise 。例如 P(o|x) = 0.7, P(x|x) = 0.3，也就是说现在拿了一颗弹珠它是圈圈概率是0.7，请问你是要猜圈圈还是要猜叉叉。当然最好猜它是圈圈，那么错误率就是0.3。
+
+那么之前固定的 target f 可以认为是目前 target distribution 的一种特例，这时候P(y|x) = 1 for y = f(x)也就是完全没有噪声。使用 target distribution 的时候和之前是用 target function 的时候基本上没有什么太大的不一样。
+
+所以回头来看，我们 Learning 的目标分为两个部分了 predict **ideal mini-target(w.r.t. P(y|x))** on **often-seen inputs(w.r.t. P(x))**，一个是原先的 P(x)，它告诉我们哪些点是重要的常常会被抽样到也就是在 E~in~(h) 里经常出现；另外一个是 P(y|x)，它告诉我们最理想的 mini-target 是什么。在常见的点上的预测要做的表现好，这就是 machine learning 做的事情。
+
+![mlf66](./_resources/mlf66.jpg)
+
+新的流程，区别在于左上角不再是一个固定的 target function 而是一个 target distribution，要保证训练和测试的数据都是从同一个分布产生的。
+
+VC still works.
+
+### Error Measure
+
+final hypothesis g ≈ f
+
+如何衡量 g 跟 f 是长的很像的呢？之前使用的是 E~out~(g)，有三个特性：**out of sample** 衡量的是还没有看过或者是未来抽样出来的x，**point-wise** 可以在每一个x上个别衡量，最后做抽样的平均就可以了，**classification** 二元分类考虑的就是对或者不对。实际上有很多的错误衡量的方式，不过为了简单起见大部分的主要集中在 point-wise 的方式。
+
+![mlf67](./_resources/mlf67.jpg)
+
+![mlf68](./_resources/mlf68.jpg)
+
+### Two Important Pointwise Error Measures
+
+![mlf69](./_resources/mlf69.jpg)
+
+那有哪些 Point-wise 的错误衡量方式呢？0/1 error 通常用在分类上，分对还是分错；平方的 error 通常用在回归分析，计算错误的距离。未来会讲更多不同错误衡量方式。不同的错误衡量方式，会影响到最理想的 mini-target，也就是最好的 f 会长什么样。
+
+VC 理论对于很多不同的 hypothesis set 还有很多不同的错误衡量方式来说都会 work。也就是说，不管是 classification 还是 regression，不只是0/1的错误衡量，都能得到类似的 VC bound。详细的数学推导太过于繁复，大家没有必要都走过一遍。
+
+0/1 找最大概率的那个；平方 找加权平均值
+
+于是新的 Learning Flow 会加上 Error Message 的部分
+
+![mlf70](./_resources/mlf70.jpg)
+
+**一个习题**
+
+![mlf71](./_resources/mlf71.jpg)
+
+### Choice of Error Measure
+
+这些错误的衡量到底哪里来的呢？想象一个指纹分类系统，分类器可能会犯两种错误：false accept，应该要说不可以用，但是分类器说可以用；false reject，明明应该可以用，但是分类器说不可以用。其实也就是我们在分类中常说的 false positive 和 false negative，只是台湾和大陆的叫法不同而已。对于这两种错误的类型，之前的 0/1 error penalizes both types equally。然而，在实际应用中，两种错误带来的影响可能很不一样。
+
+![mlf72](./_resources/mlf72.jpg)
+
+但是很多时候错误衡量的具体权重是不太能确定的，所以在设计算法的时候常常要采用替代的方式。一种替代方式是找一些有意义的错误衡量，例如之前 Pocket PLA 在进行 0/1 分类时如果分不对就认为是噪声，想办法让噪声最小也就是 0/1 error 最小(NP hard问题之前有提到)。以及以后会讲到的距离平方的方式，想办法高斯噪声最小；另外一种替代方式会更 friendly，例如很容易求出解，或者凸优化的目标函数等。
+
+![mlf73](./_resources/mlf73.jpg)
+
+### Weighted Classification
+
+不同的错误有不同的惩罚
+
+![mlf74](./_resources/mlf74.jpg)
+
+weighted classification: **different 'weight' for different (x, y)**
+
+### Minimizing E~in~ for Weighted Classification
+
+目标还是让 E~in~^w^(h) 越小越好
+
+![mlf75](./_resources/mlf75.jpg)
+
+![mlf76](./_resources/mlf76.jpg)
+
+一种比较机械的方式就是，在训练开始前，我们将{(x,y) | y=-1} 的数据复制1000倍之后再开始学习，后面的步骤与传统的 pocket 方法一模一样。然而，从效率、计算资源的角度考虑，通常不会真的将 y=-1 的数据拷贝 1000 倍，实际中一般采用”virtual copying”。
+
+![mlf77](./_resources/mlf77.jpg)
+
+只要保证：randomly check -1 example mistakes with 1000 times more probability。也就是说，pocket 随机访问-1错误点的几率在概率上要比非权重PLA算法时访问-1错误点的几率高了1000倍。
+
+systematic route(called 'reduction') can be applied to many other algorithm
+
+**一个习题**
+
+![mlf78](./_resources/mlf78.jpg)
+
+总之，我们选择好适合特定应用的error measure: err，然后在训练时力求最小化err，即，我们要让最后的预测发生错误的可能性最小（错误测量值最小），这样的学习是有效的。
+
+## Lecture 9: Linear Regression
+
+例如，信用卡额度预测问题：特征是用户的信息（年龄，性别，年薪，当前债务，…），我们要预测可以给该客户多大的信用额度。 这样的问题就是回归问题。目标值 y 是实数空间 R。线性回归的假设 hypothesis 是 h(x) = w^T^x
+
+For x = (x~0~, x~1~, x~2~,..., x~d~) 'features of customer', approximate the **desired credit limit** with a **weighted** sum:
+
+![mlf79](./_resources/mlf79.jpg)
+
+怎么理解？向量 x 就代表客户的不同信息，然后通过这个 hypothesis，也就是不同的权重向量 w，相乘得到一个实数
+
+h(x): like **perceptron**, but without the **sign**
+
+**linear regression**: find lines/hyperplanes with small **residuals**
+
+### The Error Measure
+
+![mlf80](./_resources/mlf80.jpg)
+
+这里之所以可以直接用 w 代替 h，因为每个不同的 hypothesis 实际上就是对应不同的权重
+
+所以现在的问题就是最小化 E~in~(w)
+
+### Matrix Form of E~in~(w)
+
+![mlf81](./_resources/mlf81.jpg)
+
+然后就可以得到下面的式子：
+
+![mlf82](./_resources/mlf82.jpg)
+
+这是一个连续可微凸函数，要找到最低点，表示不管到哪个方向都没有办法更低，也就是对应点的梯度(在每个方向上做偏微分)为零
+
+![mlf83](./_resources/mlf83.jpg)
+
+找到一个 W~LIN~,在各个方向偏微分为零
+
+### The Gradient ▽E~in~(w)
+
+![mlf84](./_resources/mlf84.jpg)
+
+假设我们的 w 是一维的，那么上面的式子就变成了一个一元二次方程，求微分就很简单，对 w 求导即可。如果 w 是一个向量，那么就可以按照如下的方式来进行对梯度的求解(其实和一维的情况很像)
+
+![mlf85](./_resources/mlf85.jpg)
+
+所以整个式子是这么写：
+
+▽E~in~(w) = 2/N * (X^T^Xw - X^T^y)
+
+### Optimal Linear Regression Weights
+
+task: find W~LIN~ such that ▽E~in~(w) = 2/N * (X^T^Xw - X^T^y) = 0
+
+![mlf86](./_resources/mlf86.jpg)
+
+如果 X^T^X 可逆的话，那么问题很简单(有唯一解)，可以直接求出 W~LIN~，并且大部分情况可能是如此。如果不可逆的话，就有很多组解，但是依然可以找到 pseudo-inverse，因此找到 W~LIN~
+
+![mlf87](./_resources/mlf87.jpg)
+
+实际上，无论哪种情况，我们都可以很容易得到结果。因为许多现成的机器学习/数学库帮我们处理好了这个问题，只要我们直接调用相应的计算函数即可。有些库中把这种广义求逆矩阵运算成为 pseudo-inverse。
+
+### Linear Regression Algorithm
+
+![mlf88](./_resources/mlf88.jpg)
+
+有比较好的 pseudo-inverse 的话，这个算法非常简单有效
+
+**一个习题**
+
+![mlf89](./_resources/mlf89.jpg)
+
+### Is Linear Regression a 'Learning Algorithm'?
+
+![mlf90](./_resources/mlf90.jpg)
+
+从某些角度来说，不算是，但是从某些角度来说，也是学习的算法
+
+![mlf91](./_resources/mlf91.jpg)
+
+if E~out~(W~LIN~) is good, learning 'happened'!
+
+### Benefit of Analytic Solution: 'Simpler-than-VC' Guarantee
+
+![mlf92](./_resources/mlf92.jpg)
+
+接下来，我们试图求一下E~in~，E~out~ 的平均范围，会比求解VC bound更为简单。
+
+### Geometric View of **Hat Matrix**
+
+![mlf93](./_resources/mlf93.jpg)
+
+N 维的空间里，y 是在 N 维空间里的向量，那么我要做预测也就是y^hat^ = Xw~LIN~，w 做的事情就是把 X 的每一个 column 作线性组合，X 的每一个 column 也是一个N维的向量。也就是说，X 拿出每个 column 可以展开成在 N 维度里面一个小的空间，然后 y^hat^ 会在这个空间里面。Linear Regression 要做什么？希望y与y^hat^的差别越小越好，也就是 y – y^hat^ 垂直于这个小空间的时候。所以，H 这个矩阵的作用就是把任何一个向量 y 投影到 X 所展开的那个空间里；I-H 的作用就是求解任何一个向量 y 对于 X 所展开的空间的余数。
+
+trace(I-H) 对角线上的值加起来是多少。trace(I – H)的物理意义：我们原来有一个n个自由度的向量，现在我们将其投影到d+1维的空间（因为X有d+1个向量展开），然后取余数，剩下的自由度最多就是N – (d + 1)。
+
+![mlf94](./_resources/mlf94.jpg)
+
+注意到 E~in~ 算的是y – y^hat^，即垂直于平面的距离。而另一个角度来说，y 可以认为是真实的 f(X) + noise的向量，我们会发现将 noise 投影在平面上求解的垂直于平面的距离实际上也就是 y – y^hat^。也就是说，我们现在要求解的 E~in~ 其实就是把I – H 这个线性的变换用在 noise 上面。于是就可以得到E~in~的平均范围，E~out~ 平均范围的求解会相对复杂这里省略。
+
+### The Learning Curve
+
+![mlf95](./_resources/mlf95.jpg)
+
+通过 E~in~ 和 E~out~ 的式子通常就，可以画出一个图通常叫做学习曲线。所以，所谓的 generalization error 也就是 E~in~ 与 E~out~ 的差距，平均来说就是 2(d+1)/N。如果还记得的话，在有 d+1 个自由度时，VC bound最坏情况下是 d+1。所以 Linear regression的 学习真的已经发生了。
+
+linear regression (LinReg): learning 'happened'!
+
+**一个习题**
+
+H: projection y to y^hat^
+
+![mlf96](./_resources/mlf96.jpg)
+
+### Linear Classification vs. Linear Regression
+
+![mlf97](./_resources/mlf97.jpg)
+
+![mlf98](./_resources/mlf98.jpg)
+
+那能否直接用 Linear regression 来解分类问题就好？听起来有点道理。
+
+![mlf99](./_resources/mlf99.jpg)
+
+之所以能够通过线程回归的方法来进行二值分类，是由于回归的 squared error 是分类的 0/1 error 的上界(平方的错误一定比0/1的错误大)
+
+![mlf100](./_resources/mlf100.jpg)
+
+用一个宽松一点但是更好算的限制来简化。
+
+我们通过优化 squared error，一定程度上也能得到不错的分类结果；或者，更好的选择是，将回归方法得到的 w 作为二值分类模型的初始 w 值。
+
+W~LIN~: useful baseline classifier, or as initial PLA/pocket vector 用作一开始的 w~0~，就可以加速 PLA/pocket 的运算
+
+**一个习题**
+
+![mlf101](./_resources/mlf101.jpg)
+
+
